@@ -1,0 +1,114 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+/* run this program using the console pauser or add your own getch, system("pause") or input loop */
+
+#define pi 3.1415
+
+double rad(float angle)
+{
+	double r;
+	r=(angle)*pi/180;
+	return r;
+}
+
+typedef struct  {
+	float m;
+	float f; 	//动摩擦系数 
+	float g;
+	float start_v;
+	float start_s;
+	float start_angle;
+	float start_length;	 
+}*p_start1,start1;
+
+typedef struct  {
+	float m;
+	float f;      //动摩擦系数 
+	float g;
+	float den;     //水的密度
+	float Rx;      //水阻力
+	float Ks;      //附加质量系数
+	float Kg;      //浮力距系数
+	float w;       //排水体积
+	float Cs;      //阻力系数
+	float mo_g;    //重力距 
+	float start_v;
+	float start_s;
+	float entry_v;
+	float entry_s;
+	float entry_angle; 
+}*p_entry1,entry1;
+
+void Ship_start_init(p_start1 psta)	
+{ 
+    start1 sta; 
+    scanf("%f,%f,%f,%f,%f",&sta.m,&sta.f,&sta.g,&sta.start_angle,&sta.start_length);
+	psta->m=sta.m;
+	psta->f=sta.f;
+	psta->g=sta.g;
+	psta->start_angle=sta.start_angle;
+	psta->start_length=sta.start_length;
+	psta->start_s=0;
+	psta->start_v=0;
+}
+
+void Ship_entry_init(p_entry1 pent,start1 sta)	
+{ 
+    entry1 ent; 
+    scanf("%f,%f,%f,%f,%f,&f",&ent.den,&ent.Rx,&ent.Ks,&ent.Kg,&ent.Cs,&ent.mo_g);
+	pent->m=sta.m;
+	pent->f=sta.f;
+	pent->g=sta.g;
+	pent->den=ent.den;
+	pent->Rx=ent.Rx;
+	pent->Ks=ent.Ks;
+	pent->Kg=ent.Kg;
+	pent->Cs=ent.Cs;
+	pent->mo_g=ent.mo_g;
+	pent->entry_angle=sta.start_angle;
+	pent->entry_s=sta.start_s;
+	pent->entry_v=sta.start_v;
+	pent->start_s=sta.start_s;
+	pent->start_v=sta.start_v;
+}
+
+void Ship_start(p_start1 psta)
+{
+   float v_square; 
+   float angle;
+   angle=psta->start_angle;
+   double r;
+   r=rad(angle);
+   while(psta->start_s<psta->start_length)
+   {
+   	psta->start_s+=0.1;
+   	v_square=2*psta->start_s*psta->g*(sin(rad)-psta->f*cos(rad));
+   	psta->start_v=pow(v_square,0.5);
+   	printf("移动距离；%f 速度：%f\n",psta->start_s,psta->start_v);
+   }
+   printf("船舶起动阶段结束，入水速度为%f",psta->start_v); 
+}
+
+void Ship_entry(p_entry1 pent)
+{
+   	float N;
+   	float E=0;
+   	float v_square; 
+   	float rad;
+    rad=(pent->entry_angle*pi)/180;
+   	for(pent->entry_s=pent->start_s;(pent->entry_s*pent->entry_s*pent->Kg)<pent->mo_g;pent->entry_s+=0.1)//判断浮力距是否等于重力矩
+   	{
+	  N=(pent->m*pent->g-pent->den*pent->g*pent->w)*cos(rad);
+	
+	}
+   	
+}
+
+int main(int argc, char *argv[]) {
+    start1 sta; 
+	Ship_start_init(&sta);
+	Ship_start(&sta);
+	return 0;
+}
